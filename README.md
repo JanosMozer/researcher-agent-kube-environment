@@ -1,12 +1,12 @@
-# RAKET — Researcher-Agent-Kubernetes-EnvironmenT
-
-<pre style="color: #326ce5; font-weight: bold; background: transparent; border: none; font-size: 14px; line-height: 1.2;">
+<div align="center">
+<pre style="color: #326ce5; font-weight: bold; background: transparent; border: none; font-size: 14px; line-height: 1.2; display: inline-block; text-align: left;">
 ██████   █████  ██   ██ ███████ ████████ 
 ██   ██ ██   ██ ██  ██  ██         ██    
 ██████  ███████ █████   █████      ██    
 ██   ██ ██   ██ ██  ██  ██         ██    
 ██   ██ ██   ██ ██   ██ ███████    ██    
 </pre>
+</div>
 
 RAKET (Researcher-Agent-Kubernetes-EnvironmenT) is a Rust-native, production-grade Kubernetes control plane designed for managing, coordinating, and aligning the execution lifecycle of autonomous research agents. RAKET enables continuous, state-preserving agent rotations on configurable epoch boundaries. When an active research agent pod terminates, its execution DAG and semantic context are securely signed, serialized, and passed to a warm standby promoted to successor.
 
