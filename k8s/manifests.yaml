@@ -1,0 +1,146 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: amtd
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: amtd-secrets
+  namespace: amtd
+type: Opaque
+stringData:
+  llm-api-key: "REPLACE_WITH_REAL_KEY"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: amtd-controller
+  namespace: amtd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: amtd-controller
+  namespace: amtd
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: amtd-controller
+  namespace: amtd
+subjects:
+  - kind: ServiceAccount
+    name: amtd-controller
+    namespace: amtd
+roleRef:
+  kind: Role
+  name: amtd-controller
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: amtd-controller-config
+  namespace: amtd
+data:
+  FACT_GRAPH_PATH: "/data/fact_graph.json"
+  LEDGER_PATH: "/data/ledger.json"
+  VERIFY_WORK_DIR: "/tmp/amtd-verify"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: amtd-controller-data
+  namespace: amtd
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: amtd-controller
+  namespace: amtd
+spec:
+  selector:
+    app: amtd-controller
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amtd-controller
+  namespace: amtd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: amtd-controller
+  template:
+    metadata:
+      labels:
+        app: amtd-controller
+    spec:
+      serviceAccountName: amtd-controller
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: amtd-controller-data
+      containers:
+        - name: controller
+          image: amtd-controller:latest
+          command: ["/usr/local/bin/controller"]
+          args:
+            - "--epoch=300"
+            - "--namespace=amtd"
+            - "--agent-image=amtd-agent:latest"
+            - "--warm-pool-size=2"
+            - "--port=8080"
+            - "--fact-graph-path=/data/fact_graph.json"
+            - "--ledger-path=/data/ledger.json"
+            - "--verify-timeout=30"
+            - "--verify-work-dir=/tmp/amtd-verify"
+            - "--alignment-objective=Autonomous research maximizing Kubernetes AMTD coverage"
+            - "--alignment-threshold=0.0"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: amtd-secrets
+                  key: llm-api-key
+            - name: RUST_LOG
+              value: "info"
+          envFrom:
+            - configMapRef:
+                name: amtd-controller-config
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "1000m"

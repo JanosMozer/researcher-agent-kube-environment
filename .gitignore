@@ -1,0 +1,21 @@
+# Compile-time artifacts
+target/
+
+# Local configuration and environment secrets
+.env
+.env*.local
+
+# Agent/Antigravity plugins and skill folders (highly confidential)
+.agent/
+.antigravitycli/
+.gemini/
+
+# Local databases and verification workspaces
+fact_graph.json
+ledger.json
+/tmp/amtd-verify/
+
+# IDE files
+.vscode/
+.idea/
+.DS_Store
