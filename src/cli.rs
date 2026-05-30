@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand};
 
 #[derive(Parser, Debug, Clone)]
-#[command(name = "amtd-controller", about = "AMTD Kubernetes Controller — Autonomous Moving Target Defense")]
+#[command(name = "raket-controller", about = "RAKET Kubernetes Controller — Researcher-Agent-Kubernetes-EnvironmenT")]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Option<Commands>,
@@ -27,7 +27,7 @@ pub struct Cli {
     pub ledger_path: String,
     #[arg(long = "verify-timeout", env = "VERIFY_TIMEOUT_SEC", default_value = "30")]
     pub verify_timeout_sec: u64,
-    #[arg(long = "verify-work-dir", env = "VERIFY_WORK_DIR", default_value = "/tmp/amtd-verify")]
+    #[arg(long = "verify-work-dir", env = "VERIFY_WORK_DIR", default_value = "/tmp/raket-verify")]
     pub verify_work_dir: String,
     #[arg(long = "alignment-objective", env = "ALIGNMENT_OBJECTIVE", default_value = "Autonomous research")]
     pub alignment_objective: String,
@@ -38,7 +38,7 @@ pub struct Cli {
 
 #[derive(Subcommand, Debug, Clone)]
 pub enum Commands {
-    /// Start the AMTD controller daemon (default behavior if no subcommand is given)
+    /// Start the RAKET controller daemon (default behavior if no subcommand is given)
     Run,
     /// Query permanently committed facts
     QueryFacts {

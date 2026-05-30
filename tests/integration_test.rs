@@ -154,7 +154,7 @@ async fn test_alignment_gate_rejects_unaligned_state() {
 #[tokio::test]
 async fn test_alignment_gate_accumulates_ground_vectors() {
     let secret = "s";
-    let mut gate = AlignmentGate::new("AMTD Kubernetes research", 0.0);
+    let mut gate = AlignmentGate::new("RAKET Kubernetes research", 0.0);
     for i in 0..3u64 {
         let mut state = make_test_state(secret);
         state.dag.epoch = i;
@@ -187,7 +187,7 @@ async fn test_full_rotation_pipeline_state_ingest_then_alignment() {
     let captured = pending.read().await.clone().unwrap();
     assert_eq!(captured.signature, state.compute_signature(secret));
 
-    let mut gate = AlignmentGate::new("AMTD Kubernetes research rotation", 0.0);
+    let mut gate = AlignmentGate::new("RAKET Kubernetes research rotation", 0.0);
     let report = run_alignment_gate(&mut gate, &captured).unwrap();
     assert!(report.passed);
     assert!(!report.ed25519_signature.is_empty());
@@ -226,7 +226,7 @@ async fn test_ledger_add_and_neutralize_via_api() {
     let router = build_router(app_state);
     let body = serde_json::json!({
         "label": "focus-on-amtd",
-        "content": "Prioritize AMTD Kubernetes rotation research",
+        "content": "Prioritize RAKET Kubernetes rotation research",
         "weight": 1.5,
         "rotation_policy": "next_epoch"
     });

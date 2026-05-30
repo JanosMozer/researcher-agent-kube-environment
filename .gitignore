@@ -13,7 +13,7 @@ target/
 # Local databases and verification workspaces
 fact_graph.json
 ledger.json
-/tmp/amtd-verify/
+/tmp/raket-verify/
 
 # IDE files
 .vscode/

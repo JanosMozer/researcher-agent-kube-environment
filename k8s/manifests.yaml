@@ -53,7 +53,7 @@ metadata:
 data:
   FACT_GRAPH_PATH: "/data/fact_graph.json"
   LEDGER_PATH: "/data/ledger.json"
-  VERIFY_WORK_DIR: "/tmp/amtd-verify"
+  VERIFY_WORK_DIR: "/tmp/raket-verify"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -112,8 +112,8 @@ spec:
             - "--fact-graph-path=/data/fact_graph.json"
             - "--ledger-path=/data/ledger.json"
             - "--verify-timeout=30"
-            - "--verify-work-dir=/tmp/amtd-verify"
-            - "--alignment-objective=Autonomous research maximizing Kubernetes AMTD coverage"
+            - "--verify-work-dir=/tmp/raket-verify"
+            - "--alignment-objective=Autonomous research maximizing Kubernetes RAKET coverage"
             - "--alignment-threshold=0.0"
           ports:
             - containerPort: 8080

@@ -1,19 +1,29 @@
-# AMTD Controller — Autonomous Moving Target Defense for Kubernetes
+# RAKET — Researcher-Agent-Kubernetes-EnvironmenT
 
-AMTD Controller is a Rust-native, production-grade Kubernetes control plane designed for **Autonomous Moving Target Defense (AMTD)**. It systematically eliminates persistent container attack surfaces by rotating autonomous agent pods on configurable epoch boundaries. When a pod is terminated, its execution DAG and semantic context are securely signed, serialized, and handed off to a warm standby promoted to successor.
+<pre style="color: #326ce5; font-weight: bold; background: transparent; border: none; font-size: 14px; line-height: 1.2;">
+██████   █████  ██   ██ ███████ ████████ 
+██   ██ ██   ██ ██  ██  ██         ██    
+██████  ███████ █████   █████      ██    
+██   ██ ██   ██ ██  ██  ██         ██    
+██   ██ ██   ██ ██   ██ ███████    ██    
+</pre>
+
+RAKET (Researcher-Agent-Kubernetes-EnvironmenT) is a Rust-native, production-grade Kubernetes control plane designed for managing, coordinating, and aligning the execution lifecycle of autonomous research agents. RAKET enables continuous, state-preserving agent rotations on configurable epoch boundaries. When an active research agent pod terminates, its execution DAG and semantic context are securely signed, serialized, and passed to a warm standby promoted to successor.
 
 The framework features an integrated **Multi-Backend Formal Verification Engine** (Lean 4, Z3, isolated code sandboxes) and a dynamic **Steering Ground Vector Ledger** that enforces immutable task trajectory alignment via cosine similarity matching and real-time pod rotation.
+
+Licensed under the Apache License, Version 2.0 (the "License").
 
 ---
 
 ## Key Capabilities
 
-*   **Stateless Agent Rotation:** Pre-schedules warm standby pods under strict anti-affinity rules, promoting them to active instantly upon epoch boundary deletion (SIGTERM).
+*   **Continuous Agent Lifecycle Management:** Pre-schedules warm standby pods under strict anti-affinity rules, promoting them to active status immediately upon epoch boundaries.
 *   **Tamper-Proof State Hand-off:** Signs serialized state payloads with SHA-256 HMAC and cryptographically signs validated alignment trajectories with Ed25519.
 *   **Steering Ground Vector Ledger:** Manages an immutable list of steering constraints. Vectors can have an `immediate` rotation policy to instantly rotate pods when new steering guidelines are injected.
-*   **Multi-Backend Formal Verification Engine:** programmatically verifies logic and code via Lean 4, Z3, or isolated, multi-language differential sandboxes (Python, Bash, Node.js, Ruby).
+*   **Multi-Backend Formal Verification Engine:** Programmatically verifies logic and code via Lean 4, Z3, or isolated, multi-language differential sandboxes (Python, Bash, Node.js, Ruby).
 *   **Durable Audit Trail:** Persists all formal verification attempts (including failed theories and incorrect findings) and permanently commits correct facts to a deduped fact graph.
-*   **Dual-Mode CLI:** Runs as a server daemon or acts as a client client querying running controllers (with offline JSON file fallback).
+*   **Dual-Mode CLI:** Runs as a server daemon or acts as a client querying running controllers (with offline JSON file fallback).
 
 ---
 
@@ -21,7 +31,7 @@ The framework features an integrated **Multi-Backend Formal Verification Engine*
 
 ```
                               ┌──────────────────────────────────────────────┐
-                              │           amtd-controller Daemon             │
+                              │           raket-controller Daemon            │
                               │  ┌──────────────┐    ┌────────────────────┐  │
                               │  │  Epoch Loop  │    │   Axum HTTP API    │  │
                               │  │  (rotation)  │    │  (Ingest/Verify)   │  │
@@ -96,7 +106,7 @@ These options apply to both server startup and client query commands:
 ### Commands
 
 #### 1. `run` (Default)
-Starts the AMTD controller server daemon, starts the warm pod provisioner, and runs the epoch rotation loop.
+Starts the RAKET controller server daemon, starts the warm pod provisioner, and runs the epoch rotation loop.
 ```bash
 cargo run --bin controller -- run --epoch 300 --warm-pool-size 2
 ```
@@ -155,7 +165,7 @@ cargo run --bin controller -- neutralize <VECTOR_ID>
 
 ## HTTP API Reference
 
-The AMTD controller exposes a high-performance REST API. In-cluster agents and shims utilize this API to submit states and programmatically verify findings.
+The RAKET controller exposes a high-performance REST API. In-cluster agents and shims utilize this API to submit states and programmatically verify findings.
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -173,7 +183,7 @@ The AMTD controller exposes a high-performance REST API. In-cluster agents and s
 
 ## In-Pod Agent Integration
 
-For an agent pod to participate in the AMTD architecture, its container entrypoint must run through the signal-trapping shim.
+For an agent pod to participate in the RAKET architecture, its container entrypoint must run through the signal-trapping shim.
 
 ### Python Shim Helper
 A production-ready Python helper `shim.py` is included in [shim/shim.py](file:///Users/mozer/Documents/projects/researcher-agent-kube-environment/shim/shim.py). It:
@@ -221,14 +231,18 @@ Parameters can be injected via CLI flags or standard Environment Variables:
 | `--warm-pool-size` | `WARM_POOL_SIZE` | `2` | Number of standby warm pods in pool |
 | `--port` | `CONTROLLER_PORT` | `8080` | HTTP Server Port |
 | `--verify-timeout` | `VERIFY_TIMEOUT_SEC` | `30` | Subprocess execution timeout |
-| `--verify-work-dir` | `VERIFY_WORK_DIR` | `"/tmp/amtd-verify"` | Temporary sandbox folder |
+| `--verify-work-dir` | `VERIFY_WORK_DIR` | `"/tmp/raket-verify"` | Temporary sandbox folder |
 | `--alignment-objective`| `ALIGNMENT_OBJECTIVE`| `"Autonomous research"` | Primary steering objective |
 | `--alignment-threshold`| `ALIGNMENT_THRESHOLD`| `0.0` | Cosine similarity pass score threshold |
 
 ---
 
-## Security Design
+## License & Security Design
 
+### License
+This project is released under the **Apache License, Version 2.0**. For details, see the accompanying `LICENSE` file or visit [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
+### Security Design
 *   **Signature Enforcement:** The controller signs state payloads using SHA-256 HMAC utilizing the `LLM_API_KEY` secret. On promotion, the successor pod verifies the signature, preventing man-in-the-middle or state-hijacking attacks.
 *   **Sandbox Isolation:** The verification engine runs scripts in separate subprocesses with highly restricted standard paths. In production environments, it is recommended to bind mount empty directories or run the controller inside an unprivileged namespace with restricted security context constraints.
 *   **Decoupled RBAC:** The controller operates with minimal cluster capabilities, requiring only namespace-scoped pod management permissions.

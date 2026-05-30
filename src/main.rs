@@ -302,7 +302,7 @@ async fn main() -> Result<()> {
         epoch_sec = config.epoch_duration_sec,
         warm_pool = config.warm_pool_size,
         port = config.controller_port,
-        "AMTD Controller starting (out-of-cluster via kubeconfig)"
+        "RAKET Controller starting (out-of-cluster via kubeconfig)"
     );
 
     tokio::fs::create_dir_all(&cli.verify_work_dir).await?;
@@ -376,4 +376,4 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
-// Starts the AMTD controller daemon.
+// Starts the RAKET controller daemon.

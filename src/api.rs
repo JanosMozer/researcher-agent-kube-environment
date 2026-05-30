@@ -322,5 +322,5 @@ pub fn build_router(state: Arc<AppState>) -> Router {
         .route("/api/v1/history/search/:hash", get(search_history_by_hash))
         .with_state(state)
 }
-// Constructs the Axum router with all AMTD controller endpoints mounted.
+// Constructs the Axum router with all RAKET controller endpoints mounted.
 

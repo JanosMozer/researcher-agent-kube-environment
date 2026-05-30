@@ -257,7 +257,7 @@ pub async fn rotate_active_pod(controller: &Controller) -> Result<(), Controller
     provision_warm_pod(controller, &replenish_name).await?;
     Ok(())
 }
-/// Executes a full AMTD rotation: terminates active pod, verifies + injects captured state into promoted warm pod, replenishes warm pool.
+/// Executes a full state rotation: terminates active pod, verifies + injects captured state into promoted warm pod, replenishes warm pool.
 
 pub async fn run_epoch_loop(controller: Arc<Controller>, trigger: Arc<Notify>) -> Result<()> {
     let epoch_secs = {
@@ -271,7 +271,7 @@ pub async fn run_epoch_loop(controller: Arc<Controller>, trigger: Arc<Notify>) -
     loop {
         tokio::select! {
             _ = ticker.tick() => {
-                info!("Epoch boundary reached — initiating AMTD rotation");
+                info!("Epoch boundary reached — initiating state rotation");
             }
             _ = trigger.notified() => {
                 info!("Immediate rotation triggered via ground vector injection");

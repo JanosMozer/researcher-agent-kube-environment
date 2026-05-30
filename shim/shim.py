@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AMTD Agent SIGTERM Shim
+RAKET Agent SIGTERM Shim
 Intercepts SIGTERM, serializes structural DAG + semantic state,
 and POSTs signed payload to the external controller before container exit.
 """
