@@ -1,11 +1,19 @@
 <div align="center">
-<pre style="color: #326ce5; font-weight: bold; background: transparent; border: none; font-size: 14px; line-height: 1.2; display: inline-block; text-align: left;">
-██████   █████  ██   ██ ███████ ████████ 
-██   ██ ██   ██ ██  ██  ██         ██    
-██████  ███████ █████   █████      ██    
-██   ██ ██   ██ ██  ██  ██         ██    
-██   ██ ██   ██ ██   ██ ███████    ██    
-</pre>
+  <img src="raket_logo.png" alt="RAKET Logo" width="280" />
+  
+  <br />
+  
+  [![Version](https://img.shields.io/badge/version-0.1.0-blue)](https://github.com/JanosMozer/researcher-agent-kube-environment)
+  [![CI Status](https://img.shields.io/badge/CI-passing-success?style=flat&logo=github-actions&logoColor=white)](https://github.com/JanosMozer/researcher-agent-kube-environment/actions)
+  [![OS Agnostic](https://img.shields.io/badge/OS-Agnostic-blueviolet?style=flat)](https://github.com/JanosMozer/researcher-agent-kube-environment)
+  
+  <br />
+  
+  [![Kubernetes Compliant](https://img.shields.io/badge/Kubernetes-%23326ce5.svg?style=flat&logo=kubernetes&logoColor=white)](https://kubernetes.io)
+  [![Rust Compliant](https://img.shields.io/badge/Rust-%23000000.svg?style=flat&logo=rust&logoColor=white)](https://www.rust-lang.org)
+  [![Python Compliant](https://img.shields.io/badge/Python-3670A0?style=flat&logo=python&logoColor=ffdd54)](https://www.python.org)
+  [![Z3 SMT Compliant](https://img.shields.io/badge/Z3_SMT-%23ffcc00.svg?style=flat)](https://github.com/Z3Prover/z3)
+  [![Lean 4 Compliant](https://img.shields.io/badge/Lean_4-%231f242e.svg?style=flat)](https://lean-lang.org)
 </div>
 
 RAKET (Researcher-Agent-Kubernetes-EnvironmenT) is a Rust-native, production-grade Kubernetes control plane designed for managing, coordinating, and aligning the execution lifecycle of autonomous research agents. RAKET enables continuous, state-preserving agent rotations on configurable epoch boundaries. When an active research agent pod terminates, its execution DAG and semantic context are securely signed, serialized, and passed to a warm standby promoted to successor.
