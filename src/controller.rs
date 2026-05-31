@@ -136,6 +136,7 @@ pub async fn build_agent_pod_manifest(
             containers: vec![k8s_openapi::api::core::v1::Container {
                 name: "agent".to_string(),
                 image: Some(config.agent_image.clone()),
+                image_pull_policy: Some("IfNotPresent".to_string()),
                 env: Some(env_vars),
                 resources: Some(ResourceRequirements {
                     requests: Some({
@@ -210,12 +211,7 @@ pub async fn rotate_active_pod(controller: &Controller) -> Result<(), Controller
         guard.pending_state.clone()
     };
 
-    let new_active_name = format!(
-        "amtd-agent-{}",
-        uuid::Uuid::new_v4().to_string().split('-').next().unwrap_or("x")
-    );
-
-    if let Some(ref captured_state) = pending_state {
+    let promoted_active_name = if let Some(ref captured_state) = pending_state {
         let expected_sig =
             captured_state.compute_signature(&config.llm_api_key);
         if captured_state.signature != expected_sig {
@@ -223,6 +219,11 @@ pub async fn rotate_active_pod(controller: &Controller) -> Result<(), Controller
                 captured_state.pod_name.clone(),
             ));
         }
+
+        let new_active_name = format!(
+            "amtd-agent-{}",
+            uuid::Uuid::new_v4().to_string().split('-').next().unwrap_or("x")
+        );
 
         let manifest =
             build_agent_pod_manifest(&new_active_name, &config, false, Some(captured_state))
@@ -232,6 +233,7 @@ pub async fn rotate_active_pod(controller: &Controller) -> Result<(), Controller
             pod = new_active_name,
             "Active pod promoted from warm pool with injected state"
         );
+        new_active_name
     } else {
         let promote_patch = serde_json::json!({
             "metadata": { "labels": { "role": "active" } }
@@ -239,17 +241,18 @@ pub async fn rotate_active_pod(controller: &Controller) -> Result<(), Controller
         pod_api
             .patch(
                 next_warm,
-                &PatchParams::apply("amtd-controller"),
+                &PatchParams::default(),
                 &Patch::Merge(&promote_patch),
             )
             .await?;
         info!(pod = next_warm, "Warm pod promoted to active (no state)");
-    }
+        next_warm.clone()
+    };
 
     let replenish_name = format!("amtd-warm-{}", uuid::Uuid::new_v4().to_string().split('-').next().unwrap_or("x"));
 
     let mut state_guard = controller.state.write().await;
-    state_guard.active_pod_name = Some(new_active_name.clone());
+    state_guard.active_pod_name = Some(promoted_active_name);
     state_guard.warm_pod_names.retain(|p| p != next_warm);
     state_guard.pending_state = None;
     drop(state_guard);

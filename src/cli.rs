@@ -79,6 +79,8 @@ pub enum Commands {
     Neutralize {
         id: String,
     },
+    /// Detailed help guide explaining what and how to use the RAKET CLI commands
+    HelpGuide,
 }
 // Defines all subcommands supported by the CLI tool.
 

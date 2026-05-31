@@ -161,6 +161,12 @@ Soft-deletes a steering ground vector in the ledger, preventing it from steering
 cargo run --bin controller -- neutralize <VECTOR_ID>
 ```
 
+#### 8. `help-guide`
+Displays a detailed guide explaining the purpose, arguments, and direct usage examples of all available RAKET CLI subcommands.
+```bash
+cargo run --bin controller -- help-guide
+```
+
 ---
 
 ## HTTP API Reference

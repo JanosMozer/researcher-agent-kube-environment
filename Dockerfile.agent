@@ -1,0 +1,11 @@
+FROM python:3.11-slim
+WORKDIR /app
+RUN pip install requests
+COPY shim/shim.py ./shim.py
+COPY shim/researcher.py ./researcher.py
+ENV POD_NAME=unknown-pod
+ENV POD_NAMESPACE=amtd
+ENV CONTROLLER_ENDPOINT=http://amtd-controller:8080
+ENV LLM_API_KEY=""
+ENV PYTHONUNBUFFERED=1
+ENTRYPOINT ["python3", "researcher.py"]

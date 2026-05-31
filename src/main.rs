@@ -275,6 +275,42 @@ async fn execute_subcommand(cli: &Cli, cmd: &Commands) -> Result<()> {
             }
             Ok(())
         }
+        Commands::HelpGuide => {
+            println!("================================================================================");
+            println!("RAKET CLI Tool - Detailed Command Guide");
+            println!("================================================================================");
+            println!("The RAKET CLI enables real-time auditing and steering of the background ");
+            println!("autonomous mathematical researcher pods running in Kubernetes.\n");
+            println!("1. Query Committed Facts");
+            println!("   Lists all permanently committed mathematical findings that successfully passed");
+            println!("   formal verification.");
+            println!("   Usage:   cargo run --bin controller -- query-facts [--tag <TAG>] [--backend <BACKEND>] [--epoch <EPOCH>]");
+            println!("   Example: cargo run --bin controller -- query-facts --tag raket\n");
+            println!("2. List History");
+            println!("   Lists all historical mathematical conjectures and theories submitted to the");
+            println!("   formal verification sandbox (both passed and failed).");
+            println!("   Usage:   cargo run --bin controller -- list-history [--backend <BACKEND>] [--status <passed|failed>] [--epoch <EPOCH>]");
+            println!("   Example: cargo run --bin controller -- list-history --status failed\n");
+            println!("3. Search by Proof Hash");
+            println!("   Retrieve the exact Python code and standard output/error trace of any ");
+            println!("   conjecture or attempt matching a specific payload hash.");
+            println!("   Usage:   cargo run --bin controller -- search <HASH>");
+            println!("   Example: cargo run --bin controller -- search df87a39704b58d35dba1767cb13c0208b4bdc76190e508b6273d4be7ec03635f\n");
+            println!("4. Steering Ground Vectors");
+            println!("   - List Vectors:");
+            println!("     Displays all current steering directives in the ledger that control the agent.");
+            println!("     Usage:   cargo run --bin controller -- list-vectors");
+            println!("   - Add Vector:");
+            println!("     Injects a new steering directive to influence future epochs. Immediate policy");
+            println!("     triggers an instant warm-pool pod promotion.");
+            println!("     Usage:   cargo run --bin controller -- add-vector --label <LABEL> --content <CONTENT> [--weight <WEIGHT>] [--policy <immediate|next_epoch>]");
+            println!("     Example: cargo run --bin controller -- add-vector --label \"Symmetry\" --content \"Favor divisor symmetries\" --policy immediate");
+            println!("   - Neutralize Vector:");
+            println!("     Soft-deletes a directive to disable its influence.");
+            println!("     Usage:   cargo run --bin controller -- neutralize <ID>");
+            println!("================================================================================");
+            Ok(())
+        }
     }
 }
 /// Executes parsed CLI subcommands with graceful daemon API failover to direct JSON store manipulation.
@@ -348,7 +384,8 @@ async fn main() -> Result<()> {
 
     let ctrl_warmup = Arc::clone(&ctrl);
     tokio::spawn(async move {
-        for i in 0..ctrl_warmup.state.read().await.config.warm_pool_size {
+        let warm_pool_size = ctrl_warmup.state.read().await.config.warm_pool_size;
+        for i in 0..warm_pool_size {
             let name = format!(
                 "amtd-warm-{}-{}",
                 i,
