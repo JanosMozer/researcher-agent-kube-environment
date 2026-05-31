@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="raket_logo.jpg" alt="RAKET Logo" width="550" />
+  <img src="raket_logo.png" alt="RAKET Logo" width="550" />
   
   <br />
   
