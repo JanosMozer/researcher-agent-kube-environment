@@ -1,11 +1,5 @@
 <div align="center">
-<pre style="color: #326ce5; font-weight: bold; background: transparent; border: none; font-size: 14px; line-height: 1.2; display: inline-block; text-align: left;">
-██████   █████  ██   ██ ███████ ████████ 
-██   ██ ██   ██ ██  ██  ██         ██    
-██████  ███████ █████   █████      ██    
-██   ██ ██   ██ ██  ██  ██         ██    
-██   ██ ██   ██ ██   ██ ███████    ██    
-</pre>
+  <img src="raket_logo.jpg" alt="RAKET Logo" width="550" />
   
   <br />
   
