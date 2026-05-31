@@ -13,9 +13,9 @@ pub struct Cli {
     /// User-injected steering ground vectors (comma-separated labels:content:weight:policy tuples)
     #[arg(long = "ground-vector")]
     pub ground_vectors: Vec<String>,
-    #[arg(long, env = "TARGET_NAMESPACE", default_value = "amtd")]
+    #[arg(long, env = "TARGET_NAMESPACE", default_value = "raket")]
     pub namespace: String,
-    #[arg(long = "agent-image", env = "AGENT_IMAGE", default_value = "amtd-agent:latest")]
+    #[arg(long = "agent-image", env = "AGENT_IMAGE", default_value = "raket-agent:latest")]
     pub agent_image: String,
     #[arg(long = "warm-pool-size", env = "WARM_POOL_SIZE", default_value = "2")]
     pub warm_pool_size: u32,

@@ -13,9 +13,9 @@ import threading
 import datetime
 import requests
 
-CONTROLLER_ENDPOINT = os.environ.get("CONTROLLER_ENDPOINT", "http://amtd-controller:8080")
+CONTROLLER_ENDPOINT = os.environ.get("CONTROLLER_ENDPOINT", "http://raket-controller:8080")
 POD_NAME = os.environ.get("POD_NAME", "unknown-pod")
-POD_NAMESPACE = os.environ.get("POD_NAMESPACE", "amtd")
+POD_NAMESPACE = os.environ.get("POD_NAMESPACE", "raket")
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
 AGENT_ID = os.environ.get("AGENT_ID", "")
 TRANSMIT_TIMEOUT = int(os.environ.get("SHIM_TRANSMIT_TIMEOUT", "10"))

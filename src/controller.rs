@@ -65,7 +65,7 @@ pub async fn build_agent_pod_manifest(
     injected_state: Option<&AgentState>,
 ) -> Result<Pod, ControllerError> {
     let mut labels = BTreeMap::new();
-    labels.insert("app".to_string(), "amtd-agent".to_string());
+    labels.insert("app".to_string(), "raket-agent".to_string());
     labels.insert(
         "role".to_string(),
         if warm { "warm" } else { "active" }.to_string(),
@@ -76,7 +76,7 @@ pub async fn build_agent_pod_manifest(
             name: "LLM_API_KEY".to_string(),
             value_from: Some(k8s_openapi::api::core::v1::EnvVarSource {
                 secret_key_ref: Some(k8s_openapi::api::core::v1::SecretKeySelector {
-                    name: "amtd-secrets".to_string(),
+                    name: "raket-secrets".to_string(),
                     key: "llm-api-key".to_string(),
                     optional: Some(false),
                 }),
@@ -87,7 +87,7 @@ pub async fn build_agent_pod_manifest(
         k8s_openapi::api::core::v1::EnvVar {
             name: "CONTROLLER_ENDPOINT".to_string(),
             value: Some(format!(
-                "http://amtd-controller:{}",
+                "http://raket-controller:{}",
                 config.controller_port
             )),
             ..Default::default()
@@ -108,7 +108,7 @@ pub async fn build_agent_pod_manifest(
             label_selector: Some(LabelSelector {
                 match_labels: Some({
                     let mut m = BTreeMap::new();
-                    m.insert("app".to_string(), "amtd-agent".to_string());
+                    m.insert("app".to_string(), "raket-agent".to_string());
                     m
                 }),
                 ..Default::default()
@@ -225,7 +225,7 @@ pub async fn rotate_active_pod(controller: &Controller) -> Result<(), Controller
         }
 
         let new_active_name = format!(
-            "amtd-agent-{}",
+            "raket-agent-{}",
             uuid::Uuid::new_v4().to_string().split('-').next().unwrap_or("x")
         );
 
@@ -259,7 +259,7 @@ pub async fn rotate_active_pod(controller: &Controller) -> Result<(), Controller
                 let mut state_guard = controller.state.write().await;
                 state_guard.warm_pod_names.retain(|p| p != next_warm);
                 drop(state_guard);
-                let replenish_name = format!("amtd-warm-{}", uuid::Uuid::new_v4().to_string().split('-').next().unwrap_or("x"));
+                let replenish_name = format!("raket-warm-{}", uuid::Uuid::new_v4().to_string().split('-').next().unwrap_or("x"));
                 provision_warm_pod(controller, &replenish_name).await?;
                 return Ok(());
             }
@@ -267,7 +267,7 @@ pub async fn rotate_active_pod(controller: &Controller) -> Result<(), Controller
         }
     };
 
-    let replenish_name = format!("amtd-warm-{}", uuid::Uuid::new_v4().to_string().split('-').next().unwrap_or("x"));
+    let replenish_name = format!("raket-warm-{}", uuid::Uuid::new_v4().to_string().split('-').next().unwrap_or("x"));
 
     let mut state_guard = controller.state.write().await;
     state_guard.active_pod_name = Some(promoted_active_name);

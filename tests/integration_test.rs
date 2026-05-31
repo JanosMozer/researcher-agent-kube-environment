@@ -1,9 +1,9 @@
-use amtd_controller::alignment::{run_alignment_gate, AlignmentGate};
-use amtd_controller::api::{build_router, AppState};
-use amtd_controller::fact_graph;
-use amtd_controller::ledger;
-use amtd_controller::state::{AgentState, DagNode, DagNodeStatus, ExecutionDag, SemanticContext};
-use amtd_controller::verify::{verify, VerificationEngine, VerifierBackend};
+use raket_controller::alignment::{run_alignment_gate, AlignmentGate};
+use raket_controller::api::{build_router, AppState};
+use raket_controller::fact_graph;
+use raket_controller::ledger;
+use raket_controller::state::{AgentState, DagNode, DagNodeStatus, ExecutionDag, SemanticContext};
+use raket_controller::verify::{verify, VerificationEngine, VerifierBackend};
 use axum::body::Body;
 use axum::http::{Method, Request, StatusCode};
 use chrono::Utc;
@@ -16,7 +16,7 @@ fn make_test_state(secret: &str) -> AgentState {
     let mut state = AgentState {
         agent_id: uuid::Uuid::new_v4().to_string(),
         pod_name: "test-pod-alpha".to_string(),
-        namespace: "amtd-test".to_string(),
+        namespace: "raket-test".to_string(),
         captured_at: Utc::now(),
         dag: ExecutionDag {
             nodes: vec![DagNode {
@@ -35,8 +35,8 @@ fn make_test_state(secret: &str) -> AgentState {
                 "Pod anti-affinity eliminates scheduling lag".to_string(),
                 "SHA-256 state signing prevents payload tampering".to_string(),
             ],
-            scratchpad_tokens: vec!["amtd".to_string(), "rotation".to_string(), "kubernetes".to_string()],
-            source_urls: vec!["https://arxiv.org/abs/amtd".to_string()],
+            scratchpad_tokens: vec!["raket".to_string(), "rotation".to_string(), "kubernetes".to_string()],
+            source_urls: vec!["https://arxiv.org/abs/raket".to_string()],
         },
         signature: String::new(),
     };
@@ -225,7 +225,7 @@ async fn test_ledger_add_and_neutralize_via_api() {
 
     let router = build_router(app_state);
     let body = serde_json::json!({
-        "label": "focus-on-amtd",
+        "label": "focus-on-raket",
         "content": "Prioritize RAKET Kubernetes rotation research",
         "weight": 1.5,
         "rotation_policy": "next_epoch"
@@ -244,7 +244,7 @@ async fn test_ledger_add_and_neutralize_via_api() {
     let ledger = app_state2.ledger.read().await;
     assert_eq!(ledger.entries.len(), 1);
     let entry = ledger.entries.values().next().unwrap();
-    assert_eq!(entry.label, "focus-on-amtd");
+    assert_eq!(entry.label, "focus-on-raket");
     assert!(!entry.neutralized);
 }
 
@@ -296,7 +296,7 @@ async fn test_verification_engine_z3_unsat() {
     let result = verify(&engine, VerifierBackend::Z3, z3_payload).await;
     match result {
         Ok(vr) => assert_eq!(vr.backend, "z3"),
-        Err(amtd_controller::verify::VerifyError::Io(e))
+        Err(raket_controller::verify::VerifyError::Io(e))
             if e.kind() == std::io::ErrorKind::NotFound =>
         {
             eprintln!("SKIP: z3 not in PATH");
@@ -324,7 +324,7 @@ async fn test_verification_engine_sandbox_python_match() {
             assert!(vr.backend.starts_with("sandbox-"));
             assert!(vr.success, "Expected match: {vr:?}");
         }
-        Err(amtd_controller::verify::VerifyError::Io(e))
+        Err(raket_controller::verify::VerifyError::Io(e))
             if e.kind() == std::io::ErrorKind::NotFound =>
         {
             eprintln!("SKIP: python3 not in PATH");
@@ -349,7 +349,7 @@ async fn test_verification_engine_sandbox_python_mismatch() {
     .await;
     match result {
         Ok(vr) => assert!(!vr.success, "Should fail on mismatch"),
-        Err(amtd_controller::verify::VerifyError::Io(e))
+        Err(raket_controller::verify::VerifyError::Io(e))
             if e.kind() == std::io::ErrorKind::NotFound =>
         {
             eprintln!("SKIP: python3 not in PATH");

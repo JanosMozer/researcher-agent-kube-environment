@@ -1,4 +1,4 @@
-use amtd_controller::shim::{run_signal_interceptor, ShimRuntime};
+use raket_controller::shim::{run_signal_interceptor, ShimRuntime};
 use anyhow::Result;
 use std::sync::Arc;
 use tracing::info;

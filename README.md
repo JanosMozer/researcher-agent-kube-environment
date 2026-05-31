@@ -1,19 +1,25 @@
 <div align="center">
-  <img src="raket_logo.png" alt="RAKET Logo" width="280" />
+<pre style="color: #326ce5; font-weight: bold; background: transparent; border: none; font-size: 14px; line-height: 1.2; display: inline-block; text-align: left;">
+██████   █████  ██   ██ ███████ ████████ 
+██   ██ ██   ██ ██  ██  ██         ██    
+██████  ███████ █████   █████      ██    
+██   ██ ██   ██ ██  ██  ██         ██    
+██   ██ ██   ██ ██   ██ ███████    ██    
+</pre>
   
   <br />
   
-  [![Version](https://img.shields.io/badge/version-0.1.0-blue)](https://github.com/JanosMozer/researcher-agent-kube-environment)
+  [![GitHub Release](https://img.shields.io/github/v/release/JanosMozer/researcher-agent-kube-environment?color=blue)](https://github.com/JanosMozer/researcher-agent-kube-environment/releases/latest)
+  [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
   [![CI Status](https://img.shields.io/badge/CI-passing-success?style=flat&logo=github-actions&logoColor=white)](https://github.com/JanosMozer/researcher-agent-kube-environment/actions)
   [![OS Agnostic](https://img.shields.io/badge/OS-Agnostic-blueviolet?style=flat)](https://github.com/JanosMozer/researcher-agent-kube-environment)
   
   <br />
   
   [![Kubernetes Compliant](https://img.shields.io/badge/Kubernetes-%23326ce5.svg?style=flat&logo=kubernetes&logoColor=white)](https://kubernetes.io)
-  [![Rust Compliant](https://img.shields.io/badge/Rust-%23000000.svg?style=flat&logo=rust&logoColor=white)](https://www.rust-lang.org)
-  [![Python Compliant](https://img.shields.io/badge/Python-3670A0?style=flat&logo=python&logoColor=ffdd54)](https://www.python.org)
-  [![Z3 SMT Compliant](https://img.shields.io/badge/Z3_SMT-%23ffcc00.svg?style=flat)](https://github.com/Z3Prover/z3)
-  [![Lean 4 Compliant](https://img.shields.io/badge/Lean_4-%231f242e.svg?style=flat)](https://lean-lang.org)
+  [![Rust Compliant](https://img.shields.io/badge/Rust-%23f74c00.svg?style=flat&logo=rust&logoColor=black)](https://www.rust-lang.org)
+  [![Z3 SMT Compliant](https://img.shields.io/badge/Z3_SMT-%23ffcc00.svg?style=flat)](https://docs.rs/z3/latest/z3/)
+  [![Lean 4 Compliant](https://img.shields.io/badge/Lean_4-%231f242e.svg?style=flat)](https://docs.rs/lean-sys/latest/lean_sys/)
 </div>
 
 RAKET (Researcher-Agent-Kubernetes-EnvironmenT) is a Rust-native, production-grade Kubernetes control plane designed for managing, coordinating, and aligning the execution lifecycle of autonomous research agents. RAKET enables continuous, state-preserving agent rotations on configurable epoch boundaries. When an active research agent pod terminates, its execution DAG and semantic context are securely signed, serialized, and passed to a warm standby promoted to successor.
@@ -66,6 +72,16 @@ Licensed under the Apache License, Version 2.0 (the "License").
 
 ---
 
+## Installation
+
+Install the prebuilt binary matching your platform with a single-line command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/JanosMozer/researcher-agent-kube-environment/main/install.sh | bash
+```
+
+---
+
 ## Quick Start (Local Out-of-Cluster)
 
 To test the controller without deploying it inside a Kubernetes cluster, you can run the binary locally. It will utilize your local `kubeconfig` to execute pod operations in your target namespace.
@@ -73,19 +89,19 @@ To test the controller without deploying it inside a Kubernetes cluster, you can
 ### Prerequisites
 *   Rust toolchain (Cargo, stable channel)
 *   Access to a Kubernetes cluster (e.g. `minikube`, `kind`, or remote)
-*   Namespace named `amtd` created: `kubectl create namespace amtd`
+*   Namespace named `raket` created: `kubectl create namespace raket`
 *   (Optional) `z3` or `lean` binaries installed locally for local verification testing
 
 ### 1. Run the Controller Daemon
 Start the controller locally in daemon mode:
 ```bash
 cargo run --bin controller -- \
-  --namespace amtd \
+  --namespace raket \
   --warm-pool-size 1 \
   --epoch 300 \
   --llm-key "my-signing-secret"
 ```
-The HTTP API will bind to `http://127.0.0.1:8080` and the daemon will automatically provision a warm standby pod in the `amtd` namespace.
+The HTTP API will bind to `http://127.0.0.1:8080` and the daemon will automatically provision a warm standby pod in the `raket` namespace.
 
 ### 2. Verify with the CLI
 In another terminal, use the CLI client to verify the system status:
@@ -240,8 +256,8 @@ Parameters can be injected via CLI flags or standard Environment Variables:
 |---|---|---|---|
 | `--epoch` | `EPOCH_DURATION_SEC` | `300` | Rotation interval in seconds |
 | `--llm-key` | `LLM_API_KEY` | `""` | Key used for HMAC state signatures |
-| `--namespace` | `TARGET_NAMESPACE` | `"amtd"` | Kubernetes namespace for agent pods |
-| `--agent-image` | `AGENT_IMAGE` | `"amtd-agent:latest"` | Container image of the promoted agent |
+| `--namespace` | `TARGET_NAMESPACE` | `"raket"` | Kubernetes namespace for agent pods |
+| `--agent-image` | `AGENT_IMAGE` | `"raket-agent:latest"` | Container image of the promoted agent |
 | `--warm-pool-size` | `WARM_POOL_SIZE` | `2` | Number of standby warm pods in pool |
 | `--port` | `CONTROLLER_PORT` | `8080` | HTTP Server Port |
 | `--verify-timeout` | `VERIFY_TIMEOUT_SEC` | `30` | Subprocess execution timeout |

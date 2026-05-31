@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: amtd
+  name: raket
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: amtd-secrets
-  namespace: amtd
+  name: raket-secrets
+  namespace: raket
 type: Opaque
 stringData:
   llm-api-key: "REPLACE_WITH_REAL_KEY"
@@ -15,14 +15,14 @@ stringData:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: amtd-controller
-  namespace: amtd
+  name: raket-controller
+  namespace: raket
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: amtd-controller
-  namespace: amtd
+  name: raket-controller
+  namespace: raket
 rules:
   - apiGroups: [""]
     resources: ["pods"]
@@ -34,22 +34,22 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: amtd-controller
-  namespace: amtd
+  name: raket-controller
+  namespace: raket
 subjects:
   - kind: ServiceAccount
-    name: amtd-controller
-    namespace: amtd
+    name: raket-controller
+    namespace: raket
 roleRef:
   kind: Role
-  name: amtd-controller
+  name: raket-controller
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: amtd-controller-config
-  namespace: amtd
+  name: raket-controller-config
+  namespace: raket
 data:
   FACT_GRAPH_PATH: "/data/fact_graph.json"
   LEDGER_PATH: "/data/ledger.json"
@@ -58,8 +58,8 @@ data:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: amtd-controller-data
-  namespace: amtd
+  name: raket-controller-data
+  namespace: raket
 spec:
   accessModes: [ReadWriteOnce]
   resources:
@@ -69,11 +69,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: amtd-controller
-  namespace: amtd
+  name: raket-controller
+  namespace: raket
 spec:
   selector:
-    app: amtd-controller
+    app: raket-controller
   ports:
     - name: http
       port: 8080
@@ -82,31 +82,31 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: amtd-controller
-  namespace: amtd
+  name: raket-controller
+  namespace: raket
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: amtd-controller
+      app: raket-controller
   template:
     metadata:
       labels:
-        app: amtd-controller
+        app: raket-controller
     spec:
-      serviceAccountName: amtd-controller
+      serviceAccountName: raket-controller
       volumes:
         - name: data
           persistentVolumeClaim:
-            claimName: amtd-controller-data
+            claimName: raket-controller-data
       containers:
         - name: controller
-          image: amtd-controller:latest
+          image: raket-controller:latest
           command: ["/usr/local/bin/controller"]
           args:
             - "--epoch=300"
-            - "--namespace=amtd"
-            - "--agent-image=amtd-agent:latest"
+            - "--namespace=raket"
+            - "--agent-image=raket-agent:latest"
             - "--warm-pool-size=2"
             - "--port=8080"
             - "--fact-graph-path=/data/fact_graph.json"
@@ -121,13 +121,13 @@ spec:
             - name: LLM_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: amtd-secrets
+                  name: raket-secrets
                   key: llm-api-key
             - name: RUST_LOG
               value: "info"
           envFrom:
             - configMapRef:
-                name: amtd-controller-config
+                name: raket-controller-config
           volumeMounts:
             - name: data
               mountPath: /data

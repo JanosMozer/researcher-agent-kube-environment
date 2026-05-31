@@ -89,7 +89,7 @@ pub async fn run_lean4(
     payload: &str,
 ) -> Result<VerificationResult, VerifyError> {
     let tmp = tempfile::Builder::new()
-        .prefix("amtd_lean_")
+        .prefix("raket_lean_")
         .suffix(".lean")
         .tempfile_in(&engine.work_dir)
         .map_err(VerifyError::Io)?;
@@ -139,7 +139,7 @@ pub async fn run_z3(
     payload: &str,
 ) -> Result<VerificationResult, VerifyError> {
     let tmp = tempfile::Builder::new()
-        .prefix("amtd_z3_")
+        .prefix("raket_z3_")
         .suffix(".smt2")
         .tempfile_in(&engine.work_dir)
         .map_err(VerifyError::Io)?;
@@ -199,7 +199,7 @@ pub async fn run_sandbox(
     };
 
     let tmp = tempfile::Builder::new()
-        .prefix("amtd_sandbox_")
+        .prefix("raket_sandbox_")
         .suffix(ext)
         .tempfile_in(&engine.work_dir)
         .map_err(VerifyError::Io)?;

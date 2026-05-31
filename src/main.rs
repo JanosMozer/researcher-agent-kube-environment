@@ -1,10 +1,10 @@
-use amtd_controller::api::{build_router, AppState};
-use amtd_controller::cli::{Cli, Commands};
-use amtd_controller::config::Config;
-use amtd_controller::controller::{provision_warm_pod, run_epoch_loop, Controller};
-use amtd_controller::fact_graph::{load_fact_graph, FactNode, VerificationAttempt};
-use amtd_controller::ledger::{add_entry, neutralize_entry, load_ledger, save_ledger, RotationPolicy, LedgerEntry};
-use amtd_controller::verify::VerificationEngine;
+use raket_controller::api::{build_router, AppState};
+use raket_controller::cli::{Cli, Commands};
+use raket_controller::config::Config;
+use raket_controller::controller::{provision_warm_pod, run_epoch_loop, Controller};
+use raket_controller::fact_graph::{load_fact_graph, FactNode, VerificationAttempt};
+use raket_controller::ledger::{add_entry, neutralize_entry, load_ledger, save_ledger, RotationPolicy, LedgerEntry};
+use raket_controller::verify::VerificationEngine;
 use anyhow::Result;
 use clap::Parser;
 use std::net::SocketAddr;
@@ -416,7 +416,7 @@ async fn main() -> Result<()> {
         let warm_pool_size = ctrl_warmup.state.read().await.config.warm_pool_size;
         for i in 0..warm_pool_size {
             let name = format!(
-                "amtd-warm-{}-{}",
+                "raket-warm-{}-{}",
                 i,
                 Uuid::new_v4().to_string().split('-').next().unwrap_or("x")
             );
