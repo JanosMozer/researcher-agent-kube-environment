@@ -311,6 +311,35 @@ async fn execute_subcommand(cli: &Cli, cmd: &Commands) -> Result<()> {
             println!("================================================================================");
             Ok(())
         }
+        Commands::PodStatus => {
+            let output = std::process::Command::new("kubectl")
+                .args(["get", "pods", "-n", &cli.namespace, "-o", "wide"])
+                .output()?;
+            println!("{}", String::from_utf8_lossy(&output.stdout));
+            Ok(())
+        }
+        Commands::PodLogs { pod_name, tail } => {
+            let name = match pod_name {
+                Some(n) => n.clone(),
+                None => {
+                    let output = std::process::Command::new("kubectl")
+                        .args(["get", "pods", "-n", &cli.namespace, "-o", "jsonpath={.items[0].metadata.name}"])
+                        .output()?;
+                    let name_str = String::from_utf8_lossy(&output.stdout).trim().to_string();
+                    if name_str.is_empty() {
+                        println!("No running researcher pods found in namespace {}.", cli.namespace);
+                        return Ok(());
+                    }
+                    name_str
+                }
+            };
+            println!("Fetching logs for pod {} in namespace {} (tail {}):", name, cli.namespace, tail);
+            let output = std::process::Command::new("kubectl")
+                .args(["logs", "-n", &cli.namespace, &name, "--tail", &tail.to_string()])
+                .output()?;
+            println!("{}", String::from_utf8_lossy(&output.stdout));
+            Ok(())
+        }
     }
 }
 /// Executes parsed CLI subcommands with graceful daemon API failover to direct JSON store manipulation.

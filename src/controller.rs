@@ -15,7 +15,7 @@ use std::sync::Arc;
 use thiserror::Error;
 use tokio::sync::{Notify, RwLock};
 use tokio::time::{interval, Duration};
-use tracing::{error, info};
+use tracing::{error, info, warn};
 
 #[derive(Debug, Error)]
 pub enum ControllerError {
@@ -201,9 +201,13 @@ pub async fn rotate_active_pod(controller: &Controller) -> Result<(), Controller
 
     if let Some(ref active_name) = active_pod {
         info!(pod = active_name, "Issuing graceful termination to active pod");
-        pod_api
-            .delete(active_name, &DeleteParams::default())
-            .await?;
+        match pod_api.delete(active_name, &DeleteParams::default()).await {
+            Ok(_) => {}
+            Err(kube::Error::Api(ref err)) if err.code == 404 => {
+                warn!(pod = active_name, "Active pod was already terminated out-of-band");
+            }
+            Err(e) => return Err(ControllerError::KubeError(e)),
+        }
     }
 
     let pending_state = {
@@ -238,15 +242,29 @@ pub async fn rotate_active_pod(controller: &Controller) -> Result<(), Controller
         let promote_patch = serde_json::json!({
             "metadata": { "labels": { "role": "active" } }
         });
-        pod_api
+        match pod_api
             .patch(
                 next_warm,
                 &PatchParams::default(),
                 &Patch::Merge(&promote_patch),
             )
-            .await?;
-        info!(pod = next_warm, "Warm pod promoted to active (no state)");
-        next_warm.clone()
+            .await
+        {
+            Ok(_) => {
+                info!(pod = next_warm, "Warm pod promoted to active (no state)");
+                next_warm.clone()
+            }
+            Err(kube::Error::Api(ref err)) if err.code == 404 => {
+                warn!(pod = next_warm, "Warm pod was deleted out-of-band. Regenerating warm standby...");
+                let mut state_guard = controller.state.write().await;
+                state_guard.warm_pod_names.retain(|p| p != next_warm);
+                drop(state_guard);
+                let replenish_name = format!("amtd-warm-{}", uuid::Uuid::new_v4().to_string().split('-').next().unwrap_or("x"));
+                provision_warm_pod(controller, &replenish_name).await?;
+                return Ok(());
+            }
+            Err(e) => return Err(ControllerError::KubeError(e)),
+        }
     };
 
     let replenish_name = format!("amtd-warm-{}", uuid::Uuid::new_v4().to_string().split('-').next().unwrap_or("x"));

@@ -81,6 +81,15 @@ pub enum Commands {
     },
     /// Detailed help guide explaining what and how to use the RAKET CLI commands
     HelpGuide,
+    /// Show current agent pod status (active or warm) and lists all running pods
+    PodStatus,
+    /// Fetch and print the logs of a specific running researcher pod
+    PodLogs {
+        #[arg(long)]
+        pod_name: Option<String>,
+        #[arg(long, default_value = "100")]
+        tail: i64,
+    },
 }
 // Defines all subcommands supported by the CLI tool.
 
