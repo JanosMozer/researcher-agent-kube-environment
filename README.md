@@ -9,7 +9,7 @@
   
   <br />
   
-  [![GitHub Release](https://img.shields.io/github/v/release/JanosMozer/researcher-agent-kube-environment?color=blue)](https://github.com/JanosMozer/researcher-agent-kube-environment/releases/latest)
+  [![Version](https://img.shields.io/badge/version-latest-blue)](https://github.com/JanosMozer/researcher-agent-kube-environment/releases/latest)
   [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
   [![CI Status](https://img.shields.io/badge/CI-passing-success?style=flat&logo=github-actions&logoColor=white)](https://github.com/JanosMozer/researcher-agent-kube-environment/actions)
   [![OS Agnostic](https://img.shields.io/badge/OS-Agnostic-blueviolet?style=flat)](https://github.com/JanosMozer/researcher-agent-kube-environment)
